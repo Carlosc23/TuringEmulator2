@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# (C) 2003 Ryan Phillips
-
 import sys
 
 pr = sys.stdout.write
@@ -22,14 +20,14 @@ class TuringErrorException(Exception):
     """ Turing Exception Exception """
 
     def __str__(self):
-        return "Crash"
+        return "Not accepted D:"
 
 
 class TuringAcceptException(Exception):
     """ Turing Accept Exception """
 
     def __str__(self):
-        return "Accept"
+        return "Accepted :D"
 
 
 class MachineTape:
@@ -50,19 +48,18 @@ class MachineTape:
         self.__init__(self.initialString)
 
     def move(self, check_char, changeto_char, direction):
-        """ Only R, L directions are supported """
         # check to see if the character under the head is what we need
         if check_char != self.tape[self.pos]:
             raise MachineTapeException("Tape head doesn't match head character")
 
-        # at this point the head is over the same character we are looking for
-        #  change the head character to the new character
         self.tape[self.pos] = changeto_char
 
         if direction == "L":
             self.move_left()
         elif direction == "R":
             self.move_right()
+        elif direction == "N":
+            pass
         else:
             raise MachineTapeException("Direction is invalid")
 
@@ -123,7 +120,7 @@ class TuringMachine:
         self.state = self.initState
         self.tape.reinit()
 
-    def addTransition(self, state, char_in, dest_state, char_out, movement):
+    def addTransition(self, state, char_in, dest_state, char_out, movement="N"):
         if state not in self.program:
             self.program[state] = {}
 
@@ -162,13 +159,42 @@ class TuringMachine:
 
 
 if __name__ == "__main__":
-    # machine to convert a string of A's and B's to
-    # all A's and accept
-    m = TuringMachine("1222511", [1])
 
-    m.addTransition(0, '1', 0, '1', 'R')
-    m.addTransition(0, '2', 0, '1', 'R')
-    m.addTransition(0, '_', 1, '_', 'L')
+       input1 = input("Ingrese el input")
+       estado_final = input("Ingrese el estado final")
+       m = TuringMachine(input1, [int(estado_final)])
+       cuadrupla=""
+       while cuadrupla!="ok":
+              cuadrupla = str(input("Ingrese cuadruplas, cuando ya no quiera ponga ok"))
+              if "R" or "L"  in cuadrupla :
+                  if(cuadrupla.find("ok") == -1):
+                      print("Si quiere moverse a la izquierda o derecha ponga R o L al final de la cuadrupla")
+                      print(cuadrupla)
+                      print(int(cuadrupla[0]), cuadrupla[1], int(cuadrupla[2]), cuadrupla[3], cuadrupla[4])
+                      m.addTransition(int(cuadrupla[0]), cuadrupla[1], int(cuadrupla[2]), cuadrupla[3], cuadrupla[4])
 
-    # run the TM
-    m.execute()
+              else:
+                  if cuadrupla.find("ok") == -1:
+                      m.addTransition(int(cuadrupla[0]), cuadrupla[1], int(cuadrupla[2]), cuadrupla[3])
+       m.execute()
+       # 2 examples
+       # machine to convert a string of 1's and 2's to
+       # all 1's and accept
+"""
+        m = TuringMachine("1222111", [1])
+
+        m.addTransition(0, '1', 0, '1', 'R')
+        m.addTransition(0, '2', 0, '1', 'R')
+        m.addTransition(0, '_', 1, '_', 'L')
+        m.execute()
+
+   #machine to observe if a quantity of zeros is even
+
+       m = TuringMachine("0010", [2])
+       m.addTransition(0,'0',1,'0','R')
+       m.addTransition(1, '0', 0, '0', 'R')
+       m.addTransition(0, '1', 0, '1', 'R')
+       m.addTransition(1, '1', 1, '1', 'R')
+       m.addTransition(0, '_', 2, '_', 'R')
+       # run the TM
+       m.execute()"""
